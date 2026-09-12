@@ -1,0 +1,178 @@
+{% extends 'master.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+  .detail-wrapper { background:#f4f6f9; min-height:100vh; padding:100px 0 60px 0; }
+  .detail-card { background:#fff; border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.09); padding:35px; margin-bottom:30px; }
+
+  /* Product Main */
+  .prod-img-main { width:100%; border-radius:14px; object-fit:cover; max-height:380px; box-shadow:0 4px 16px rgba(0,0,0,0.12); }
+  .prod-title { font-size:28px; font-weight:800; color:#2d3748; margin-bottom:8px; }
+  .prod-category { background:#d1ecf1; color:#0c5460; padding:4px 14px; border-radius:20px; font-size:13px; font-weight:600; display:inline-block; margin-bottom:12px; }
+  .prod-price { font-size:32px; font-weight:800; color:#1cc88a; margin-bottom:12px; }
+  .prod-details { color:#555; font-size:15px; line-height:1.7; margin-bottom:20px; }
+
+  /* Stars */
+  .stars { color:#f6c23e; font-size:20px; }
+  .avg-rating { font-size:15px; color:#666; margin-left:8px; }
+
+  /* Buttons */
+  .btn-cart { background:linear-gradient(135deg,#4e73df,#224abe); color:#fff; border:none; border-radius:10px; padding:12px 30px; font-size:15px; font-weight:700; cursor:pointer; text-decoration:none; display:inline-block; transition:opacity .2s; }
+  .btn-cart:hover { opacity:.88; color:#fff; }
+  .btn-wish { border:2px solid #e74a3b; color:#e74a3b; border-radius:10px; padding:11px 22px; font-size:15px; font-weight:700; background:#fff; cursor:pointer; text-decoration:none; display:inline-block; transition:all .2s; }
+  .btn-wish:hover, .btn-wish.active { background:#e74a3b; color:#fff; }
+  .btn-back { background:#f0f0f0; color:#444; border-radius:10px; padding:11px 22px; font-size:14px; font-weight:600; text-decoration:none; }
+  .btn-back:hover { background:#e2e8f0; }
+
+  /* Related */
+  .related-card { background:#fff; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.07); overflow:hidden; transition:transform .2s; }
+  .related-card:hover { transform:translateY(-4px); }
+  .related-card img { width:100%; height:160px; object-fit:cover; }
+  .related-card .rel-body { padding:14px; }
+  .related-card .rel-name { font-weight:700; color:#2d3748; font-size:14px; }
+  .related-card .rel-price { color:#1cc88a; font-weight:700; font-size:15px; }
+
+  /* Reviews */
+  .review-item { border-bottom:1px solid #f0f0f0; padding:16px 0; }
+  .review-item:last-child { border-bottom:none; }
+  .reviewer-name { font-weight:700; color:#2d3748; font-size:15px; }
+  .review-date { color:#999; font-size:12px; }
+  .review-comment { color:#555; font-size:14px; margin-top:6px; }
+  .review-form-card { background:#f8f9fc; border-radius:12px; padding:24px; margin-top:20px; }
+  .form-label-r { font-weight:600; color:#444; font-size:14px; margin-bottom:6px; display:block; }
+  .form-control-r { width:100%; padding:10px 14px; border:1.5px solid #e2e8f0; border-radius:8px; font-size:14px; box-sizing:border-box; outline:none; }
+  .form-control-r:focus { border-color:#4e73df; }
+  .btn-review { background:linear-gradient(135deg,#1cc88a,#13855c); color:#fff; border:none; border-radius:8px; padding:10px 28px; font-size:14px; font-weight:700; cursor:pointer; margin-top:10px; }
+  .section-title-r { font-size:20px; font-weight:800; color:#2d3748; margin-bottom:18px; }
+  .empty-msg { color:#999; font-size:14px; text-align:center; padding:20px 0; }
+</style>
+
+<div class="detail-wrapper">
+  <div class="container">
+
+    <!-- Back -->
+    <div class="mb-3">
+      <a href="{% url 'index2view' %}" class="btn-back">← Back to Products</a>
+    </div>
+
+    <!-- Main Product Card -->
+    <div class="detail-card">
+      <div class="row">
+        <!-- Image -->
+        <div class="col-lg-5 mb-4 mb-lg-0">
+          {% if prod.image %}
+          <img src="{{ prod.image.url }}" class="prod-img-main" alt="{{ prod.name }}">
+          {% else %}
+          <div style="background:#f0f0f0; height:380px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#ccc; font-size:18px;">No Image</div>
+          {% endif %}
+        </div>
+
+        <!-- Info -->
+        <div class="col-lg-7">
+          <span class="prod-category">🗂️ {{ prod.category.name }}</span>
+          <div class="prod-title">{{ prod.name }}</div>
+
+          <!-- Rating -->
+          <div style="margin-bottom:12px;">
+            <span class="stars">
+              {% for i in "12345" %}
+                {% if forloop.counter <= avg_rating %}⭐{% else %}☆{% endif %}
+              {% endfor %}
+            </span>
+            <span class="avg-rating">{{ avg_rating }} / 5 ({{ reviews|length }} reviews)</span>
+          </div>
+
+          <div class="prod-price">₹{{ prod.price }}</div>
+          <p class="prod-details">{{ prod.details }}</p>
+
+          <!-- Action Buttons -->
+          <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;">
+            <form method="POST" action="{% url 'cart_add' prod.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn-cart">🛒 Add to Cart</button>
+            </form>
+
+            {% if user.is_authenticated %}
+            <a href="{% url 'wishlist_toggle' prod.id %}" class="btn-wish {% if in_wishlist %}active{% endif %}">
+              {% if in_wishlist %}❤️ Wishlisted{% else %}🤍 Add to Wishlist{% endif %}
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related %}
+    <div class="detail-card">
+      <div class="section-title-r">🔗 Related Products</div>
+      <div class="row">
+        {% for rel in related %}
+        <div class="col-lg-3 col-md-6 mb-3">
+          <div class="related-card">
+            {% if rel.image %}
+            <img src="{{ rel.image.url }}" alt="{{ rel.name }}">
+            {% endif %}
+            <div class="rel-body">
+              <div class="rel-name">{{ rel.name }}</div>
+              <div class="rel-price">₹{{ rel.price }}</div>
+              <a href="{% url 'product_detail' rel.id %}" style="font-size:13px; color:#4e73df; text-decoration:none; font-weight:600;">View Details →</a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Reviews Section -->
+    <div class="detail-card">
+      <div class="section-title-r">⭐ Customer Reviews</div>
+
+      {% for review in reviews %}
+      <div class="review-item">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="reviewer-name">👤 {{ review.user.username }}</span>
+          <span class="review-date">{{ review.created_at|date:"d M Y" }}</span>
+        </div>
+        <div class="stars" style="font-size:16px;">
+          {% for i in "12345" %}{% if forloop.counter <= review.rating %}⭐{% else %}☆{% endif %}{% endfor %}
+        </div>
+        <p class="review-comment">{{ review.comment }}</p>
+      </div>
+      {% empty %}
+      <p class="empty-msg">No reviews yet. Be the first to review!</p>
+      {% endfor %}
+
+      <!-- Add Review Form -->
+      {% if user.is_authenticated %}
+      <div class="review-form-card">
+        <div class="section-title-r" style="font-size:17px;">✍️ Write a Review</div>
+        <form method="POST">
+          {% csrf_token %}
+          <div style="margin-bottom:14px;">
+            <label class="form-label-r">Rating</label>
+            <select name="rating" class="form-control-r" style="max-width:200px;">
+              <option value="5">⭐⭐⭐⭐⭐ (5 - Excellent)</option>
+              <option value="4">⭐⭐⭐⭐ (4 - Good)</option>
+              <option value="3">⭐⭐⭐ (3 - Average)</option>
+              <option value="2">⭐⭐ (2 - Poor)</option>
+              <option value="1">⭐ (1 - Terrible)</option>
+            </select>
+          </div>
+          <div style="margin-bottom:8px;">
+            <label class="form-label-r">Your Review</label>
+            <textarea name="comment" class="form-control-r" rows="3" placeholder="Write your review here..." required></textarea>
+          </div>
+          <button type="submit" class="btn-review">✅ Submit Review</button>
+        </form>
+      </div>
+      {% else %}
+      <p class="empty-msg"><a href="{% url 'login1' %}">Login</a> to write a review.</p>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

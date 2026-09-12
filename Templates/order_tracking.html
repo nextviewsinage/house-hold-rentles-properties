@@ -1,0 +1,156 @@
+{% extends 'master.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+  .track-wrapper { background:#f4f6f9; min-height:100vh; padding:100px 0 60px 0; }
+  .track-card { background:#fff; border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.09); padding:35px; max-width:750px; margin:0 auto; }
+  .track-header { margin-bottom:28px; }
+  .track-header h2 { font-size:24px; font-weight:800; color:#2d3748; margin:0 0 6px 0; }
+  .track-header p { color:#718096; font-size:14px; margin:0; }
+
+  /* Status Badge */
+  .status-badge { padding:6px 18px; border-radius:20px; font-size:14px; font-weight:700; display:inline-block; margin-bottom:20px; }
+  .status-Pending   { background:#fff3cd; color:#856404; }
+  .status-Confirmed { background:#d1ecf1; color:#0c5460; }
+  .status-Shipped   { background:#cce5ff; color:#004085; }
+  .status-Delivered { background:#d4edda; color:#155724; }
+  .status-Cancelled { background:#f8d7da; color:#721c24; }
+
+  /* Timeline */
+  .timeline { position:relative; padding-left:36px; margin-bottom:28px; }
+  .timeline::before { content:''; position:absolute; left:14px; top:0; bottom:0; width:3px; background:#e3e6f0; border-radius:3px; }
+  .timeline-item { position:relative; margin-bottom:24px; }
+  .timeline-dot { width:28px; height:28px; border-radius:50%; position:absolute; left:-36px; top:0; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; z-index:1; }
+  .dot-done { background:#1cc88a; color:#fff; }
+  .dot-active { background:#4e73df; color:#fff; box-shadow:0 0 0 4px rgba(78,115,223,.2); }
+  .dot-pending { background:#e3e6f0; color:#888; }
+  .dot-cancelled { background:#e74a3b; color:#fff; }
+  .timeline-content { background:#f8f9fc; border-radius:10px; padding:14px 18px; }
+  .timeline-title { font-weight:700; color:#2d3748; font-size:15px; margin-bottom:4px; }
+  .timeline-desc { font-size:13px; color:#888; }
+
+  /* Items */
+  .item-row { display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid #f0f0f0; }
+  .item-row:last-child { border-bottom:none; }
+  .item-row img { width:60px; height:60px; object-fit:cover; border-radius:8px; }
+  .item-row-info .name { font-weight:700; color:#2d3748; font-size:14px; }
+  .item-row-info .addr { font-size:12px; color:#888; }
+  .item-row-info .price { font-size:13px; color:#1cc88a; font-weight:700; }
+
+  /* Summary */
+  .summary-box { background:#f8f9fc; border-radius:10px; padding:16px 20px; margin-top:20px; }
+  .summary-row { display:flex; justify-content:space-between; font-size:14px; color:#555; margin-bottom:8px; }
+  .summary-row.total { font-size:18px; font-weight:800; color:#1cc88a; border-top:2px solid #e3e6f0; padding-top:10px; margin-top:4px; }
+
+  .btn-back { background:#f0f0f0; color:#444; padding:10px 22px; border-radius:8px; font-size:14px; font-weight:600; text-decoration:none; }
+  .btn-cancel-ord { background:#f8d7da; color:#721c24; padding:10px 22px; border-radius:8px; font-size:14px; font-weight:600; text-decoration:none; border:none; cursor:pointer; }
+  .btn-invoice { background:#d1ecf1; color:#0c5460; padding:10px 22px; border-radius:8px; font-size:14px; font-weight:600; text-decoration:none; }
+  .divider { border:none; border-top:1.5px solid #f0f0f0; margin:20px 0; }
+</style>
+
+<div class="track-wrapper">
+  <div class="track-card">
+
+    <div class="track-header">
+      <h2>🔍 Order Tracking</h2>
+      <p>Order #{{ order.id }} — {{ order.user.username }}</p>
+    </div>
+
+    <!-- Status -->
+    {% with s=status_obj.status %}
+    <span class="status-badge status-{{ s }}">
+      {% if s == 'Pending' %}⏳{% elif s == 'Confirmed' %}✅{% elif s == 'Shipped' %}🚚{% elif s == 'Delivered' %}📦{% elif s == 'Cancelled' %}❌{% endif %}
+      Current Status: {{ s }}
+    </span>
+
+    <!-- Timeline -->
+    <div class="timeline">
+
+      <!-- Pending -->
+      <div class="timeline-item">
+        <div class="timeline-dot {% if s == 'Cancelled' %}dot-cancelled{% elif s == 'Pending' %}dot-active{% else %}dot-done{% endif %}">
+          {% if s == 'Cancelled' %}❌{% elif s == 'Pending' %}⏳{% else %}✓{% endif %}
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-title">⏳ Order Placed</div>
+          <div class="timeline-desc">Your order has been received and is waiting for confirmation.</div>
+        </div>
+      </div>
+
+      <!-- Confirmed -->
+      <div class="timeline-item">
+        <div class="timeline-dot {% if s in 'Confirmed,Shipped,Delivered' %}dot-done{% elif s == 'Confirmed' %}dot-active{% else %}dot-pending{% endif %}">
+          {% if s in 'Confirmed,Shipped,Delivered' %}✓{% else %}2{% endif %}
+        </div>
+        <div class="timeline-content" style="{% if s == 'Pending' or s == 'Cancelled' %}opacity:.5;{% endif %}">
+          <div class="timeline-title">✅ Order Confirmed</div>
+          <div class="timeline-desc">Your order has been confirmed and is being prepared.</div>
+        </div>
+      </div>
+
+      <!-- Shipped -->
+      <div class="timeline-item">
+        <div class="timeline-dot {% if s in 'Shipped,Delivered' %}dot-done{% elif s == 'Shipped' %}dot-active{% else %}dot-pending{% endif %}">
+          {% if s in 'Shipped,Delivered' %}✓{% else %}3{% endif %}
+        </div>
+        <div class="timeline-content" style="{% if s not in 'Shipped,Delivered' %}opacity:.5;{% endif %}">
+          <div class="timeline-title">🚚 Order Shipped</div>
+          <div class="timeline-desc">Your order is on the way!</div>
+        </div>
+      </div>
+
+      <!-- Delivered -->
+      <div class="timeline-item">
+        <div class="timeline-dot {% if s == 'Delivered' %}dot-done{% else %}dot-pending{% endif %}">
+          {% if s == 'Delivered' %}✓{% else %}4{% endif %}
+        </div>
+        <div class="timeline-content" style="{% if s != 'Delivered' %}opacity:.5;{% endif %}">
+          <div class="timeline-title">📦 Delivered</div>
+          <div class="timeline-desc">Order has been delivered successfully.</div>
+        </div>
+      </div>
+
+    </div>
+
+    {% if status_obj.tracking_note %}
+    <div style="background:#fff3cd; border-radius:10px; padding:12px 18px; margin-bottom:20px; font-size:14px; color:#856404;">
+      📝 Note: {{ status_obj.tracking_note }}
+    </div>
+    {% endif %}
+
+    <hr class="divider">
+
+    <!-- Order Items -->
+    <h5 style="font-weight:800; color:#2d3748; margin-bottom:14px;">📋 Order Items</h5>
+    {% for item in items %}
+    <div class="item-row">
+      <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+      <div class="item-row-info">
+        <div class="name">{{ item.product.name }}</div>
+        <div class="addr">📍 {{ item.address }}</div>
+        <div class="price">₹{{ item.subtotal }}</div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- Summary -->
+    <div class="summary-box">
+      <div class="summary-row"><span>GST (18%)</span><span>₹{{ order.gst }}</span></div>
+      <div class="summary-row total"><span>Total</span><span>₹{{ order.total }}</span></div>
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex; gap:12px; margin-top:24px; flex-wrap:wrap;">
+      <a href="{% url 'My_order' %}" class="btn-back">← My Orders</a>
+      <a href="{% url 'generate_invoice' order.id %}" class="btn-invoice">🧾 Invoice</a>
+      {% if s == 'Pending' or s == 'Confirmed' %}
+      <a href="{% url 'cancel_order' order.id %}" class="btn-cancel-ord"
+         onclick="return confirm('Are you sure you want to cancel this order?')">❌ Cancel Order</a>
+      {% endif %}
+    </div>
+
+    {% endwith %}
+  </div>
+</div>
+{% endblock %}

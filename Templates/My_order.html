@@ -1,148 +1,181 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Your Orders</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #F3F4F6;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .order {
-            margin-bottom: 40px;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            background-color: #E9ECEF;
-        }
-        .order-id {
-            font-size: 24px;
-            color: #007BFF;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        .order-details {
-            margin-bottom: 20px;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 15px;
-        }
-        .product-info {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .product-info img {
-            max-width: 100px;
-            margin-right: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-        }
-        .product-name {
-            font-weight: bold;
-            color: #444;
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-        .product-price {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        .subtotal {
-            font-weight: bold;
-            font-size: 16px;
-            color: #666; /* Adjusted color for subtotal */
-            text-align: right;
-            margin-top: 5px;
-        }
-        .gst {
-            font-weight: bold;
-            font-size: 16px;
-            color: #666; /* Adjusted color for GST */
-            text-align: right;
-            margin-top: 5px;
-        }
-        .total-price {
-            font-weight: bold;
-            font-size: 20px;
-            color: #28A745;
-            margin-top: 10px;
-            text-align: right;
-            border-top: 2px solid #28A745;
-            padding-top: 10px;
-        }
-        .btn-container {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .btn {
-            padding: 12px 24px;
-            background-color: #007BFF;
-            color: #fff;
-            border: none;
-            border-radius: 25px;
-            text-decoration: none;
-            transition: background-color 0.3s;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .btn:hover {
-            background-color: #0056B3;
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h1>Your Orders</h1>
+{% extends 'master.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+  .orders-wrapper { background:#f4f6f9; min-height:100vh; padding:100px 0 60px 0; }
+  .orders-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:12px; }
+  .orders-header h2 { font-size:26px; font-weight:800; color:#2d3748; margin:0; }
+  .orders-count { background:#d1ecf1; color:#0c5460; padding:5px 16px; border-radius:20px; font-size:14px; font-weight:600; }
+
+  .order-card { background:#fff; border-radius:14px; box-shadow:0 2px 12px rgba(0,0,0,0.08); margin-bottom:24px; overflow:hidden; }
+  .order-card-header { background:#f8f9fc; padding:16px 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-bottom:1.5px solid #e3e6f0; }
+  .order-id { font-size:17px; font-weight:800; color:#4e73df; }
+  .order-meta { font-size:13px; color:#888; }
+  .order-card-body { padding:20px 24px; }
+  .order-card-footer { background:#f8f9fc; padding:14px 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-top:1.5px solid #e3e6f0; }
+
+  /* Product Row */
+  .product-row { display:flex; align-items:center; gap:16px; padding:12px 0; border-bottom:1px solid #f0f0f0; }
+  .product-row:last-child { border-bottom:none; }
+  .product-row img { width:70px; height:70px; object-fit:cover; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.10); }
+  .product-row-info { flex:1; }
+  .product-row-name { font-weight:700; color:#2d3748; font-size:15px; }
+  .product-row-addr { font-size:13px; color:#888; margin:3px 0; }
+  .product-row-price { font-size:14px; color:#555; }
+  .product-row-sub { font-weight:700; color:#1cc88a; font-size:15px; }
+
+  /* Status Badge */
+  .status-badge { padding:5px 14px; border-radius:20px; font-size:13px; font-weight:700; display:inline-flex; align-items:center; gap:5px; }
+  .status-Pending   { background:#fff3cd; color:#856404; }
+  .status-Confirmed { background:#d1ecf1; color:#0c5460; }
+  .status-Shipped   { background:#cce5ff; color:#004085; }
+  .status-Delivered { background:#d4edda; color:#155724; }
+  .status-Cancelled { background:#f8d7da; color:#721c24; }
+
+  /* Tracking Steps */
+  .tracking-steps { display:flex; gap:0; margin:16px 0; flex-wrap:wrap; }
+  .step { flex:1; text-align:center; position:relative; min-width:80px; }
+  .step::before { content:''; position:absolute; top:16px; left:50%; width:100%; height:3px; background:#e3e6f0; z-index:0; }
+  .step:last-child::before { display:none; }
+  .step-circle { width:34px; height:34px; border-radius:50%; background:#e3e6f0; color:#888; display:flex; align-items:center; justify-content:center; font-size:15px; margin:0 auto 6px; position:relative; z-index:1; font-weight:700; }
+  .step-circle.active { background:#4e73df; color:#fff; }
+  .step-circle.done { background:#1cc88a; color:#fff; }
+  .step-circle.cancelled { background:#e74a3b; color:#fff; }
+  .step-label { font-size:11px; color:#888; font-weight:600; }
+  .step-label.active { color:#4e73df; }
+  .step-label.done { color:#1cc88a; }
+
+  /* Totals */
+  .totals-box { text-align:right; }
+  .totals-box .gst { font-size:14px; color:#888; }
+  .totals-box .total { font-size:22px; font-weight:800; color:#1cc88a; }
+
+  /* Buttons */
+  .btn-invoice { background:#d1ecf1; color:#0c5460; padding:8px 18px; border-radius:8px; font-size:13px; font-weight:600; text-decoration:none; }
+  .btn-track { background:#cce5ff; color:#004085; padding:8px 18px; border-radius:8px; font-size:13px; font-weight:600; text-decoration:none; }
+  .btn-cancel-order { background:#f8d7da; color:#721c24; padding:8px 18px; border-radius:8px; font-size:13px; font-weight:600; text-decoration:none; border:none; cursor:pointer; }
+  .btn-cancel-order:hover { background:#f5c6cb; }
+  .btn-home { background:linear-gradient(135deg,#4e73df,#224abe); color:#fff; padding:10px 24px; border-radius:8px; font-size:14px; font-weight:700; text-decoration:none; display:inline-block; }
+
+  .empty-orders { text-align:center; padding:60px 20px; }
+  .empty-orders i { font-size:64px; color:#4e73df; opacity:.2; }
+  .empty-orders p { font-size:16px; color:#888; margin-top:16px; }
+</style>
+
+<div class="orders-wrapper">
+  <div class="container">
+
+    <div class="orders-header">
+      <h2>📦 My Orders</h2>
+      <span class="orders-count">{{ final_orders|length }} Orders</span>
+    </div>
+
+    {% if final_orders %}
     {% for final_order in final_orders %}
-        <div class="order">
-            <div class="order-id">Order ID: {{ final_order.id }}</div>
-            {% for confirm_order in final_order.confirmorder_set.all %}
-                <div class="order-details">
-                    <div class="product-info">
-                        <img src="{{ confirm_order.product.image.url }}" alt="Product Image">
-                        <div>
-                            <p class="product-name"><strong>Product Name:</strong> {{ confirm_order.product.name }}</p>
-                            <p class="product-name"><strong>Address:</strong> {{ confirm_order.address }}</p>
-                            <p class="product-price"><strong>Price:</strong> {{ confirm_order.product.price }}</p>
-                        </div>
-                    </div>
-                    <div class="subtotal">subtotal: {{ confirm_order.subtotal }}</div>  
-                    {% comment %} <div class="gst">GST: {{ confirm_order.gst }}</div> {% endcomment %}
 
-                </div>
-            {% endfor %}
-            <div class="total-price">Final Gst: {{ final_order.gst }}</div> 
-            <div class="total-price">Final Total: {{ final_order.total }}</div>
-            <a href="{% url 'generate_invoice' final_order.id  %}" class="btn"> invoice</a>
-                
+    {% with status_val=final_order.status.status|default:"Pending" %}
+    <div class="order-card">
 
+      <!-- Card Header -->
+      <div class="order-card-header">
+        <div>
+          <div class="order-id">Order #{{ final_order.id }}</div>
+          <div class="order-meta">Placed by: {{ final_order.user.username }}</div>
         </div>
-        
-    {% empty %}
-        <p>No orders found.</p>
+        <div>
+          <span class="status-badge status-{{ status_val }}">
+            {% if status_val == 'Pending' %}⏳
+            {% elif status_val == 'Confirmed' %}✅
+            {% elif status_val == 'Shipped' %}🚚
+            {% elif status_val == 'Delivered' %}📦
+            {% elif status_val == 'Cancelled' %}❌
+            {% endif %}
+            {{ status_val }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Tracking Steps -->
+      <div style="padding:16px 24px 0 24px;">
+        <div class="tracking-steps">
+          {% for step in "Pending,Confirmed,Shipped,Delivered"|split:"," %}
+          {% endfor %}
+
+          <!-- Pending -->
+          <div class="step">
+            <div class="step-circle {% if status_val == 'Cancelled' %}cancelled{% elif status_val == 'Pending' %}active{% else %}done{% endif %}">
+              {% if status_val == 'Cancelled' %}❌{% else %}1{% endif %}
+            </div>
+            <div class="step-label {% if status_val == 'Pending' %}active{% elif status_val != 'Cancelled' %}done{% endif %}">Pending</div>
+          </div>
+          <!-- Confirmed -->
+          <div class="step">
+            <div class="step-circle {% if status_val == 'Confirmed' %}active{% elif status_val in 'Shipped,Delivered' %}done{% endif %}">2</div>
+            <div class="step-label {% if status_val == 'Confirmed' %}active{% elif status_val in 'Shipped,Delivered' %}done{% endif %}">Confirmed</div>
+          </div>
+          <!-- Shipped -->
+          <div class="step">
+            <div class="step-circle {% if status_val == 'Shipped' %}active{% elif status_val == 'Delivered' %}done{% endif %}">3</div>
+            <div class="step-label {% if status_val == 'Shipped' %}active{% elif status_val == 'Delivered' %}done{% endif %}">Shipped</div>
+          </div>
+          <!-- Delivered -->
+          <div class="step">
+            <div class="step-circle {% if status_val == 'Delivered' %}done{% endif %}">4</div>
+            <div class="step-label {% if status_val == 'Delivered' %}done{% endif %}">Delivered</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products -->
+      <div class="order-card-body">
+        {% for confirm_order in final_order.confirmorder_set.all %}
+        <div class="product-row">
+          <img src="{{ confirm_order.product.image.url }}" alt="{{ confirm_order.product.name }}">
+          <div class="product-row-info">
+            <div class="product-row-name">{{ confirm_order.product.name }}</div>
+            <div class="product-row-addr">📍 {{ confirm_order.address }}</div>
+            <div class="product-row-price">Price: ₹{{ confirm_order.product.price }}</div>
+          </div>
+          <div class="product-row-sub">₹{{ confirm_order.subtotal }}</div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Footer -->
+      <div class="order-card-footer">
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a href="{% url 'generate_invoice' final_order.id %}" class="btn-invoice">🧾 Invoice</a>
+          <a href="{% url 'order_tracking' final_order.id %}" class="btn-track">🔍 Track Order</a>
+          {% if status_val == 'Pending' or status_val == 'Confirmed' %}
+          <a href="{% url 'cancel_order' final_order.id %}" class="btn-cancel-order"
+             onclick="return confirm('Cancel this order?')">❌ Cancel Order</a>
+          {% endif %}
+        </div>
+        <div class="totals-box">
+          <div class="gst">GST: ₹{{ final_order.gst }}</div>
+          <div class="total">Total: ₹{{ final_order.total }}</div>
+        </div>
+      </div>
+
+    </div>
+    {% endwith %}
     {% endfor %}
-    <div class="btn-container">
-            <a href="{% url 'index2view' %}" class="btn">Back to Home</a>
-            
 
-        </div>
+    {% else %}
+    <div class="order-card">
+      <div class="empty-orders">
+        <i class="bi bi-bag-x"></i>
+        <p>You have no orders yet.</p>
+        <a href="{% url 'index2view' %}" class="btn-home">🛍️ Start Shopping</a>
+      </div>
+    </div>
+    {% endif %}
 
+    <div style="text-align:center; margin-top:20px;">
+      <a href="{% url 'index2view' %}" class="btn-home">← Back to Home</a>
+    </div>
+
+  </div>
 </div>
-</body>
-</html>
+{% endblock %}

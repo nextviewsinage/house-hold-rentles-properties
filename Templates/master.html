@@ -49,23 +49,43 @@
 
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
-          <li><a class="nav-link scrollto active" href="{% url 'index2view' %}">Home</a></li>
-          {% comment %} <li><a class="nav-link scrollto" href="#about">About</a></li> {% endcomment %}
-          {% comment %} <li><a class="nav-link scrollto" href="#services">Services</a></li> {% endcomment %}
-          {% comment %} <li><a class="nav-link scrollto " href="{% url 'product' %}">Product</a></li> {% endcomment %}
-          <li><a class="nav-link scrollto" href="{% url 'cart_detail' %}">Cart</a></li>
-          <li><a class="nav-link scrollto" href="{% url 'My_order' %}">Your order</a></li>
-          <li><a class="nav-link scrollto" href="{% url 'feedback' %}">Feedback</a></li>
-          {% comment %} <li><a href="blog.html">Blog</a></li> {% endcomment %}
-          <li class="dropdown"><a href="#"><span>Account</span> <i class="bi bi-chevron-down"></i></a>
+          <li><a class="nav-link scrollto active" href="{% url 'index2view' %}">🏠 Home</a></li>
+
+          <!-- Search -->
+          <li>
+            <form method="GET" action="{% url 'product_search' %}" style="display:inline-flex; align-items:center; gap:4px;">
+              <input type="text" name="q" placeholder="Search..." style="padding:4px 10px; border-radius:6px; border:1px solid #ddd; font-size:13px; outline:none; width:130px;">
+              <button type="submit" style="background:transparent; border:none; cursor:pointer; color:#555; font-size:16px;">🔍</button>
+            </form>
+          </li>
+
+          <!-- Products Dropdown -->
+          <li class="dropdown"><a href="#"><span>🛍️ Products</span> <i class="bi bi-chevron-down"></i></a>
             <ul>
-              <li><a href="{% url 'login1' %}">login</a></li>  
-              <li><a href="{% url 're' %}">Register</a></li>
-              <li><a href="{% url 'lout' %}">Log out</a></li>
-              <li><a href="{% url 'changepassword' %}">changepasswrod</a></li>
+              <li><a href="{% url 'index2view' %}">All Products</a></li>
+              <li><a href="{% url 'price_sort' %}?sort=asc">💰 Price: Low to High</a></li>
+              <li><a href="{% url 'price_sort' %}?sort=desc">💰 Price: High to Low</a></li>
             </ul>
           </li>
-          <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
+
+          <li><a class="nav-link scrollto" href="{% url 'cart_detail' %}">🛒 Cart</a></li>
+          <li><a class="nav-link scrollto" href="{% url 'wishlist' %}">❤️ Wishlist</a></li>
+          <li><a class="nav-link scrollto" href="{% url 'My_order' %}">📦 My Orders</a></li>
+          <li><a class="nav-link scrollto" href="{% url 'feedback' %}">💬 Feedback</a></li>
+
+          <!-- Account Dropdown -->
+          <li class="dropdown"><a href="#"><span>👤 Account</span> <i class="bi bi-chevron-down"></i></a>
+            <ul>
+              <li><a href="{% url 'customer_profile' %}">👤 My Profile</a></li>
+              <li><a href="{% url 'edit_profile' %}">✏️ Edit Profile</a></li>
+              <li><a href="{% url 'changepassword' %}">🔑 Change Password</a></li>
+              <li><a href="{% url 'login1' %}">🔐 Login</a></li>
+              <li><a href="{% url 're' %}">📝 Register</a></li>
+              <li><a href="{% url 'lout' %}">🚪 Logout</a></li>
+            </ul>
+          </li>
+
+          <li><a class="nav-link scrollto" href="#contact">📞 Contact</a></li>
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav><!-- .navbar -->

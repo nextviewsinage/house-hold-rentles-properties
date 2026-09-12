@@ -1,0 +1,195 @@
+{% extends 'master.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+  .profile-wrapper { background:#f4f6f9; min-height:100vh; padding:100px 0 60px 0; }
+  .profile-hero { background:linear-gradient(135deg,#4e73df,#224abe); border-radius:16px; padding:35px 30px; color:#fff; margin-bottom:24px; display:flex; align-items:center; gap:24px; flex-wrap:wrap; }
+  .profile-avatar { width:90px; height:90px; border-radius:50%; object-fit:cover; border:4px solid rgba(255,255,255,0.4); }
+  .profile-avatar-placeholder { width:90px; height:90px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; font-size:40px; border:4px solid rgba(255,255,255,0.4); }
+  .profile-hero-info h3 { font-size:24px; font-weight:800; margin:0 0 4px 0; }
+  .profile-hero-info p { opacity:.85; font-size:14px; margin:0; }
+  .stat-pills { display:flex; gap:16px; margin-top:14px; flex-wrap:wrap; }
+  .stat-pill-w { background:rgba(255,255,255,0.18); border-radius:10px; padding:10px 20px; text-align:center; }
+  .stat-pill-w span { font-size:22px; font-weight:800; display:block; }
+  .stat-pill-w p { font-size:12px; margin:0; opacity:.85; }
+
+  .section-card { background:#fff; border-radius:14px; box-shadow:0 2px 12px rgba(0,0,0,0.07); padding:26px; margin-bottom:22px; }
+  .section-card h4 { font-size:18px; font-weight:800; color:#2d3748; margin-bottom:18px; border-bottom:2px solid #f0f0f0; padding-bottom:10px; }
+
+  .info-row { display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
+  .info-item { background:#f8f9fc; border-radius:10px; padding:12px 18px; flex:1; min-width:160px; }
+  .info-item label { font-size:11px; font-weight:700; text-transform:uppercase; color:#888; display:block; margin-bottom:4px; }
+  .info-item span { font-size:15px; font-weight:600; color:#2d3748; }
+
+  .btn-edit-prof { background:linear-gradient(135deg,#4e73df,#224abe); color:#fff; border:none; border-radius:8px; padding:10px 24px; font-size:14px; font-weight:700; text-decoration:none; display:inline-block; }
+  .btn-edit-prof:hover { opacity:.9; color:#fff; }
+
+  /* Orders mini table */
+  .mini-table { width:100%; border-collapse:collapse; }
+  .mini-table th { background:#f8f9fc; color:#5a5c69; font-size:12px; font-weight:700; text-transform:uppercase; padding:10px 14px; border-bottom:2px solid #e3e6f0; text-align:left; }
+  .mini-table td { padding:12px 14px; border-bottom:1px solid #f0f0f0; font-size:14px; color:#444; vertical-align:middle; }
+  .mini-table tr:hover td { background:#f8f9fc; }
+  .badge-s { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+  .badge-pending  { background:#fff3cd; color:#856404; }
+  .badge-confirmed{ background:#d1ecf1; color:#0c5460; }
+  .badge-shipped  { background:#d4edda; color:#155724; }
+  .badge-delivered{ background:#d4edda; color:#155724; }
+  .badge-cancelled{ background:#f8d7da; color:#721c24; }
+  .btn-track { background:#d1ecf1; color:#0c5460; padding:5px 12px; border-radius:6px; font-size:12px; font-weight:600; text-decoration:none; }
+</style>
+
+<div class="profile-wrapper">
+  <div class="container">
+
+    <!-- Hero Card -->
+    <div class="profile-hero">
+      {% if profile.profile_pic %}
+      <img src="{{ profile.profile_pic.url }}" class="profile-avatar" alt="Profile">
+      {% else %}
+      <div class="profile-avatar-placeholder">👤</div>
+      {% endif %}
+
+      <div class="profile-hero-info">
+        <h3>{{ request.user.get_full_name|default:request.user.username }}</h3>
+        <p>📧 {{ request.user.email|default:"No email set" }}</p>
+        <p>📱 {{ profile.phone|default:"No phone set" }}</p>
+        <div class="stat-pills">
+          <div class="stat-pill-w">
+            <span>{{ orders|length }}</span>
+            <p>Total Orders</p>
+          </div>
+          <div class="stat-pill-w">
+            <span>{{ wishlist_count }}</span>
+            <p>Wishlist Items</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-left:auto;">
+        <a href="{% url 'edit_profile' %}" class="btn-edit-prof">✏️ Edit Profile</a>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Contact Info -->
+      <div class="col-lg-5">
+        <div class="section-card">
+          <h4>📋 Contact Details</h4>
+          <div class="info-row">
+            <div class="info-item">
+              <label>Username</label>
+              <span>{{ request.user.username }}</span>
+            </div>
+            <div class="info-item">
+              <label>Phone</label>
+              <span>{{ profile.phone|default:"—" }}</span>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-item">
+              <label>Email</label>
+              <span>{{ request.user.email|default:"—" }}</span>
+            </div>
+            <div class="info-item">
+              <label>City</label>
+              <span>{{ profile.city|default:"—" }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Addresses -->
+        <div class="section-card">
+          <h4>📍 Saved Addresses</h4>
+          <div class="info-item" style="margin-bottom:10px;">
+            <label>Address 1</label>
+            <span>{{ profile.address1|default:"Not set" }}</span>
+          </div>
+          <div class="info-item" style="margin-bottom:10px;">
+            <label>Address 2</label>
+            <span>{{ profile.address2|default:"Not set" }}</span>
+          </div>
+          <div class="info-item" style="margin-bottom:10px;">
+            <label>Address 3</label>
+            <span>{{ profile.address3|default:"Not set" }}</span>
+          </div>
+          <div class="info-row">
+            <div class="info-item">
+              <label>State</label>
+              <span>{{ profile.state|default:"—" }}</span>
+            </div>
+            <div class="info-item">
+              <label>Pincode</label>
+              <span>{{ profile.pincode|default:"—" }}</span>
+            </div>
+          </div>
+          <div style="margin-top:14px;">
+            <a href="{% url 'edit_profile' %}" class="btn-edit-prof" style="font-size:13px; padding:8px 18px;">+ Manage Addresses</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order History -->
+      <div class="col-lg-7">
+        <div class="section-card">
+          <h4>🛒 Order History</h4>
+          <div style="overflow-x:auto;">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Total (₹)</th>
+                  <th>GST (₹)</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for order in orders %}
+                <tr>
+                  <td><strong>#{{ order.id }}</strong></td>
+                  <td><strong style="color:#1cc88a;">₹{{ order.total }}</strong></td>
+                  <td>₹{{ order.gst }}</td>
+                  <td>
+                    {% if order.status %}
+                      {% with s=order.status.status %}
+                      <span class="badge-s badge-{{ s|lower }}">
+                        {% if s == 'Pending' %}⏳{% elif s == 'Confirmed' %}✅{% elif s == 'Shipped' %}🚚{% elif s == 'Delivered' %}📦{% elif s == 'Cancelled' %}❌{% endif %}
+                        {{ s }}
+                      </span>
+                      {% endwith %}
+                    {% else %}
+                      <span class="badge-s badge-pending">⏳ Pending</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <a href="{% url 'order_tracking' order.id %}" class="btn-track">🔍 Track</a>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" style="text-align:center;color:#999;">No orders yet</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div style="margin-top:16px;">
+            <a href="{% url 'My_order' %}" class="btn-edit-prof" style="font-size:13px; padding:8px 18px;">View All Orders →</a>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="section-card">
+          <h4>⚡ Quick Actions</h4>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <a href="{% url 'wishlist' %}" style="background:#f8d7da;color:#721c24;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">❤️ My Wishlist ({{ wishlist_count }})</a>
+            <a href="{% url 'My_order' %}" style="background:#d1ecf1;color:#0c5460;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">📦 My Orders</a>
+            <a href="{% url 'changepassword' %}" style="background:#fff3cd;color:#856404;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">🔑 Change Password</a>
+            <a href="{% url 'index2view' %}" style="background:#d4edda;color:#155724;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;">🛍️ Shop Now</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
