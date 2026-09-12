@@ -1,0 +1,604 @@
+{% extends 'ownerapp/master.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+  body { background: #f4f6f9; }
+
+  /* ---- Dashboard Wrapper ---- */
+  .dashboard-wrapper {
+    margin-top: 80px;
+    padding: 30px 20px;
+  }
+
+  /* ---- Page Title ---- */
+  .page-title {
+    margin-bottom: 25px;
+  }
+  .page-title h2 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #2d3748;
+  }
+  .page-title span {
+    font-size: 14px;
+    color: #718096;
+  }
+
+  /* ---- Stat Cards ---- */
+  .stat-card {
+    border-radius: 12px;
+    padding: 22px 20px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    transition: transform 0.2s;
+  }
+  .stat-card:hover { transform: translateY(-4px); }
+  .stat-card .stat-info h3 { font-size: 32px; font-weight: 700; margin: 0; }
+  .stat-card .stat-info p  { font-size: 14px; margin: 0; opacity: 0.9; }
+  .stat-card .stat-icon i  { font-size: 48px; opacity: 0.3; }
+
+  .bg-blue    { background: linear-gradient(135deg, #4e73df, #224abe); }
+  .bg-green   { background: linear-gradient(135deg, #1cc88a, #13855c); }
+  .bg-orange  { background: linear-gradient(135deg, #f6c23e, #dda20a); }
+  .bg-red     { background: linear-gradient(135deg, #e74a3b, #be2617); }
+  .bg-purple  { background: linear-gradient(135deg, #9b59b6, #6c3483); }
+  .bg-teal    { background: linear-gradient(135deg, #36b9cc, #258391); }
+  .bg-pink    { background: linear-gradient(135deg, #e83e8c, #c0136c); }
+
+  /* ---- Section Cards ---- */
+  .section-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    margin-bottom: 25px;
+  }
+  .section-card .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 12px;
+  }
+  .section-card .section-header h5 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 0;
+  }
+
+  /* ---- Tables ---- */
+  .dash-table { width: 100%; border-collapse: collapse; }
+  .dash-table th {
+    background: #f8f9fc;
+    color: #5a5c69;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    border-bottom: 2px solid #e3e6f0;
+  }
+  .dash-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    color: #444;
+    vertical-align: middle;
+  }
+  .dash-table tr:hover td { background: #f8f9fc; }
+
+  /* ---- Badges ---- */
+  .badge-success { background: #d4edda; color: #155724; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+  .badge-warning { background: #fff3cd; color: #856404; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+  .badge-info    { background: #d1ecf1; color: #0c5460; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+  .badge-danger  { background: #f8d7da; color: #721c24; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+
+  /* ---- Search Box ---- */
+  .search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  .search-box input {
+    flex: 1;
+    padding: 9px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+  }
+  .search-box button {
+    padding: 9px 20px;
+    background: #4e73df;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .search-box button:hover { background: #224abe; }
+
+  /* ---- Notification Bell ---- */
+  .notif-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-icon {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: #e8f0fe;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .notif-icon i { color: #4e73df; font-size: 18px; }
+  .notif-text p { margin: 0; font-size: 14px; color: #444; }
+  .notif-text span { font-size: 12px; color: #999; }
+
+  /* ---- Progress Bars ---- */
+  .progress-wrap { margin-bottom: 14px; }
+  .progress-wrap .label {
+    display: flex; justify-content: space-between;
+    font-size: 13px; color: #555; margin-bottom: 5px;
+  }
+  .progress { height: 8px; border-radius: 10px; background: #eee; }
+  .progress-bar { border-radius: 10px; }
+
+  /* ---- Action Buttons ---- */
+  .btn-sm-action {
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-edit  { background: #fff3cd; color: #856404; }
+  .btn-del   { background: #f8d7da; color: #721c24; }
+  .btn-view  { background: #d1ecf1; color: #0c5460; }
+
+  /* ---- Quick Links ---- */
+  .quick-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    border-radius: 10px;
+    background: #f8f9fc;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: #444;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+  .quick-link:hover { background: #e8f0fe; color: #4e73df; }
+  .quick-link i { font-size: 20px; color: #4e73df; }
+
+  /* ---- Chart Container ---- */
+  .chart-container { position: relative; height: 280px; }
+
+  /* ---- Revenue Badge ---- */
+  .revenue-big {
+    font-size: 36px;
+    font-weight: 800;
+    color: #1cc88a;
+  }
+</style>
+
+<div class="dashboard-wrapper">
+  <div class="container-fluid">
+
+    <!-- Page Title + Notification -->
+    <div class="page-title d-flex justify-content-between align-items-center flex-wrap">
+      <div>
+        <h2><i class="bi bi-speedometer2 me-2"></i>Owner Dashboard</h2>
+        <span>Welcome back, <strong>{{ request.user.username }}</strong> 👋</span>
+      </div>
+      <div class="d-flex gap-2 mt-2 mt-md-0">
+        <a href="{% url 'product' %}" class="btn btn-sm btn-primary"><i class="bi bi-plus-circle me-1"></i>Add Product</a>
+        <a href="{% url 'category' %}" class="btn btn-sm btn-success"><i class="bi bi-plus-circle me-1"></i>Add Category</a>
+      </div>
+    </div>
+
+    <!-- ===== STAT CARDS ROW ===== -->
+    <div class="row">
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card bg-blue">
+          <div class="stat-info">
+            <h3>{{ total_products }}</h3>
+            <p>Total Products</p>
+          </div>
+          <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card bg-green">
+          <div class="stat-info">
+            <h3>{{ total_categories }}</h3>
+            <p>Total Categories</p>
+          </div>
+          <div class="stat-icon"><i class="bi bi-grid"></i></div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card bg-orange">
+          <div class="stat-info">
+            <h3>{{ total_customers }}</h3>
+            <p>Total Customers</p>
+          </div>
+          <div class="stat-icon"><i class="bi bi-people"></i></div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card bg-purple">
+          <div class="stat-info">
+            <h3>{{ total_orders }}</h3>
+            <p>Total Orders</p>
+          </div>
+          <div class="stat-icon"><i class="bi bi-cart-check"></i></div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card bg-teal">
+          <div class="stat-info">
+            <h3>₹{{ total_revenue }}</h3>
+            <p>Total Revenue</p>
+          </div>
+          <div class="stat-icon"><i class="bi bi-currency-rupee"></i></div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card bg-red">
+          <div class="stat-info">
+            <h3>{{ pending_orders }}</h3>
+            <p>Pending Orders</p>
+          </div>
+          <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card bg-pink">
+          <div class="stat-info">
+            <h3>{{ completed_orders }}</h3>
+            <p>Completed Orders</p>
+          </div>
+          <div class="stat-icon"><i class="bi bi-check-circle"></i></div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card" style="background: linear-gradient(135deg,#fd7e14,#e55a00);">
+          <div class="stat-info">
+            <h3>{{ new_notifications|length }}</h3>
+            <p>New Notifications</p>
+          </div>
+          <div class="stat-icon"><i class="bi bi-bell"></i></div>
+        </div>
+      </div>
+    </div>
+    <!-- End Stat Cards -->
+
+    <!-- ===== ROW 2: Chart + Notifications ===== -->
+    <div class="row">
+
+      <!-- Sales Chart -->
+      <div class="col-xl-8">
+        <div class="section-card">
+          <div class="section-header">
+            <h5><i class="bi bi-bar-chart-line me-2 text-primary"></i>📊 Monthly Sales Report</h5>
+            <span class="badge-info">Last 6 Months</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="salesChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="col-xl-4">
+        <div class="section-card">
+          <div class="section-header">
+            <h5><i class="bi bi-bell me-2 text-warning"></i>🔔 New Order Notifications</h5>
+            <span class="badge-warning">{{ new_notifications|length }} New</span>
+          </div>
+          {% for notif in new_notifications %}
+          <div class="notif-item">
+            <div class="notif-icon"><i class="bi bi-bag-check"></i></div>
+            <div class="notif-text">
+              <p><strong>Order #{{ notif.id }}</strong> — {{ notif.user.username }}</p>
+              <span>₹{{ notif.total }} | GST: ₹{{ notif.gst }}</span>
+            </div>
+          </div>
+          {% empty %}
+          <p class="text-muted text-center mt-3">No new notifications</p>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+    <!-- End Row 2 -->
+
+    <!-- ===== ROW 3: Product Search + Management ===== -->
+    <div class="row">
+      <div class="col-xl-12">
+        <div class="section-card">
+          <div class="section-header">
+            <h5><i class="bi bi-box-seam me-2 text-success"></i>📦 Product Stock Management</h5>
+            <a href="{% url 'product' %}" class="btn-sm-action btn-view">+ Add New</a>
+          </div>
+
+          <!-- Search -->
+          <form method="GET" action="{% url 'dashboard' %}">
+            <div class="search-box">
+              <input type="text" name="search" placeholder="🔍 Search products by name..." value="{{ search_query }}">
+              <button type="submit"><i class="bi bi-search me-1"></i>Search</button>
+              {% if search_query %}
+              <a href="{% url 'dashboard' %}" class="btn-sm-action btn-del" style="padding:9px 15px;">✕ Clear</a>
+              {% endif %}
+            </div>
+          </form>
+
+          <div class="table-responsive">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Image</th>
+                  <th>Product Name</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for prod in all_products %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>
+                    {% if prod.image %}
+                    <img src="{{ prod.image.url }}" width="45" height="45" style="border-radius:8px; object-fit:cover;">
+                    {% else %}
+                    <span class="text-muted">No img</span>
+                    {% endif %}
+                  </td>
+                  <td><strong>{{ prod.name }}</strong></td>
+                  <td><span class="badge-info">{{ prod.category.name }}</span></td>
+                  <td><strong>₹{{ prod.price }}</strong></td>
+                  <td>
+                    <a href="{% url 'editproduct' prod.id %}" class="btn-sm-action btn-edit">✏️ Edit</a>
+                    <a href="{% url 'deleteproduct' prod.id %}" class="btn-sm-action btn-del" onclick="return confirm('Delete this product?')">🗑️ Delete</a>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted">No products found</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ROW 4: Order Management + Top Products ===== -->
+    <div class="row">
+
+      <!-- Recent Orders -->
+      <div class="col-xl-8">
+        <div class="section-card">
+          <div class="section-header">
+            <h5><i class="bi bi-cart3 me-2 text-danger"></i>🛒 Order Management</h5>
+            <span class="badge-success">Recent 10 Orders</span>
+          </div>
+          <div class="table-responsive">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Total (₹)</th>
+                  <th>GST (₹)</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for order in recent_orders %}
+                <tr>
+                  <td><strong>#{{ order.id }}</strong></td>
+                  <td>
+                    <i class="bi bi-person-circle me-1 text-secondary"></i>
+                    {{ order.user.username }}
+                  </td>
+                  <td><strong>₹{{ order.total }}</strong></td>
+                  <td>₹{{ order.gst }}</td>
+                  <td>
+                    {% if order.total > 0 %}
+                    <span class="badge-success">✅ Completed</span>
+                    {% else %}
+                    <span class="badge-warning">⏳ Pending</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center text-muted">No orders yet</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Products -->
+      <div class="col-xl-4">
+        <div class="section-card">
+          <div class="section-header">
+            <h5><i class="bi bi-trophy me-2 text-warning"></i>📈 Top Products</h5>
+          </div>
+          {% for item in top_products %}
+          <div class="progress-wrap">
+            <div class="label">
+              <span>{{ item.product__name }}</span>
+              <span>{{ item.order_count }} orders</span>
+            </div>
+            <div class="progress">
+              <div class="progress-bar bg-primary" style="width: {% widthratio item.order_count 10 100 %}%"></div>
+            </div>
+          </div>
+          {% empty %}
+          <p class="text-muted text-center">No order data yet</p>
+          {% endfor %}
+
+          <!-- Revenue Summary -->
+          <div class="mt-4 text-center">
+            <p class="text-muted mb-1" style="font-size:14px;">Total Revenue Earned</p>
+            <div class="revenue-big">₹{{ total_revenue }}</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- End Row 4 -->
+
+    <!-- ===== ROW 5: Customer Management + Quick Links ===== -->
+    <div class="row">
+
+      <!-- Customer Management -->
+      <div class="col-xl-8">
+        <div class="section-card">
+          <div class="section-header">
+            <h5><i class="bi bi-people me-2 text-info"></i>👥 Customer Management</h5>
+            <span class="badge-info">{{ total_customers }} Total</span>
+          </div>
+          <div class="table-responsive">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Joined</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for customer in all_customers %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>
+                    <i class="bi bi-person-circle me-1 text-primary"></i>
+                    <strong>{{ customer.username }}</strong>
+                  </td>
+                  <td>{{ customer.email|default:"—" }}</td>
+                  <td>{{ customer.date_joined|date:"d M Y" }}</td>
+                  <td>
+                    {% if customer.is_active %}
+                    <span class="badge-success">✅ Active</span>
+                    {% else %}
+                    <span class="badge-danger">❌ Inactive</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center text-muted">No customers yet</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-xl-4">
+        <div class="section-card">
+          <div class="section-header">
+            <h5><i class="bi bi-lightning me-2 text-warning"></i>⚡ Quick Actions</h5>
+          </div>
+          <a href="{% url 'product' %}" class="quick-link">
+            <i class="bi bi-plus-circle"></i> Add New Product
+          </a>
+          <a href="{% url 'tableview' %}" class="quick-link">
+            <i class="bi bi-table"></i> Manage Products
+          </a>
+          <a href="{% url 'category' %}" class="quick-link">
+            <i class="bi bi-grid-plus"></i> Add Category
+          </a>
+          <a href="{% url 'tablecategory' %}" class="quick-link">
+            <i class="bi bi-grid"></i> Manage Categories
+          </a>
+          <a href="{% url 'index' %}" class="quick-link">
+            <i class="bi bi-house"></i> Go to Home
+          </a>
+          <a href="{% url 'logout2' %}" class="quick-link" style="color:#e74a3b;">
+            <i class="bi bi-box-arrow-right" style="color:#e74a3b;"></i> Logout
+          </a>
+        </div>
+      </div>
+
+    </div>
+    <!-- End Row 5 -->
+
+  </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('salesChart').getContext('2d');
+  const salesChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: {{ months_labels|safe }},
+      datasets: [{
+        label: 'Revenue (₹)',
+        data: {{ months_data|safe }},
+        backgroundColor: [
+          'rgba(78,115,223,0.7)',
+          'rgba(28,200,138,0.7)',
+          'rgba(246,194,62,0.7)',
+          'rgba(231,74,59,0.7)',
+          'rgba(54,185,204,0.7)',
+          'rgba(133,135,150,0.7)',
+        ],
+        borderColor: [
+          '#4e73df','#1cc88a','#f6c23e','#e74a3b','#36b9cc','#858796'
+        ],
+        borderWidth: 2,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => '₹' + ctx.raw.toLocaleString()
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: {
+            callback: val => '₹' + val
+          }
+        },
+        x: {
+          grid: { display: false }
+        }
+      }
+    }
+  });
+</script>
+
+{% endblock %}

@@ -5,6 +5,7 @@ from ownerapp import views
 
 urlpatterns = [
     path('index/',views.indexview,name='index'),
+    path('dashboard/',views.dashboardview,name='dashboard'),
     path('portfolio-detail/',views.portfoliodetailsview,name='portfolio-detail'),
     path('inner-page/',views.innerpageview,name='inner-page'),
     path('forms/',views.formsview,name='forms'),
