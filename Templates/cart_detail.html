@@ -1,0 +1,84 @@
+{% extends 'master.html' %}
+{% load static %}
+{% block content %}
+{% load cart_tag %}
+
+{% comment %} <style>
+  /* Add custom CSS styles for better visibility */
+  .btn-increment,
+  .btn-decrement,
+  .btn-remove {
+    padding: 5px 10px;
+    font-size: 16px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .btn-increment {
+    background-color: #28a745; /* Green */
+    color: #fff; /* White */
+  }
+
+  .btn-decrement {
+    background-color: #ffc107; /* Yellow */
+    color: #000; /* Black */
+  }
+
+  .btn-decrement:hover {
+    background-color: #e0a800; /* Darker Yellow on hover */
+    color: #000; /* Black */
+  }
+
+  .btn-remove {
+    background-color: #dc3545; /* Red */
+    color: #fff; /* White */
+  }
+</style> {% endcomment %}
+<main>
+<div class="container mt-5 pt-5">
+  <div class="text-center">
+    <h1>Your Shopping Cart</h1>
+  </div>
+  <div class="cart-container">
+    {% for item in cart_items %}
+    <div class="cart-item">
+      <img src="{{ item.product.image.url }}" class="cart-item-img" alt="{{ item.product.name }}">
+      <div class="item-details">
+        <h3>{{ item.product.name }}</h3>
+        <p>Price: Rs {{ item.product.price }}</p>
+        {% comment %} <p>Quantity: {{ item.quantity }}</p> {% endcomment %}
+        <p>Subtotal: Rs {{ item.subtotal|floatformat:"2" }}</p>
+      </div>
+      <div class="cart-actions">
+        <form method="post" action="{% url 'item_increment' item.product.id %}">
+          {% csrf_token %}
+          {% comment %} <button type="submit" class="btn btn-increment">+</button> {% endcomment %}
+        </form>
+        <form method="post" action="{% url 'item_decrement' item.product.id %}">
+          {% csrf_token %}
+          {% comment %} <button type="submit" class="btn btn-decrement">-</button> {% endcomment %}
+        </form>
+        <form method="post" action="{% url 'item_clear' item.product.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-remove">Remove</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+    <p class="cart-total">Total: Rs {{ total_cart_price|floatformat:"2" }}</p>
+    <form method="post" action="{% url 'confirm_order_view' %}">
+     {% csrf_token %} 
+    <label for="id_address">Address:</label>
+    <input type="text" name="address" id="id_address" required/>
+  <br />
+    <div class="text-center mt-5">
+      <a href="{% url 'index2view' %}" class="btn btn-primary">Back to Home</a>
+      <button type="submit" class="btn btn-primary">confirm order</button>
+    </div>
+  </form>
+  </div>
+</div>
+</main>
+
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'rentalapp/master.html' %}
+{% load static %}
+{% block content %}
+
+<main id="main" class="main">
+
+  <div class="container mt-5">
+    <div class="text-center">
+      <h1> rental Forms Page</h1>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="my-5" style="max-width: 600px; margin: 0 auto;">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-md-6">
+          <input type="text" name="name" class="form-control mb-3" placeholder="Your Name" required>
+        </div>
+        <div class="col-md-6">
+          <input type="text" class="form-control mb-3" name="price" placeholder="Your Price" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <input type="text" class="form-control mb-3" name="details" placeholder="Details" required>
+      </div>
+      <div class="form-group">
+        <input type="file" class="form-control mb-3" name="photo" required>
+      </div>
+      <div class="form-group">
+        <input type="text" class="form-control mb-3" name="quantity" id="subject" placeholder="Quantity" required>
+      </div>
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary">Send Message</button>
+      </div>
+    </form>
+  </div><!-- End Contact Form -->
+
+</main><!-- End #main -->
+
+<style>
+  /* forms.css */
+
+input[type="text"],
+input[type="file"],
+button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+button[type="submit"] {
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+  /* Add your custom CSS styles here */
+  input[type="text"],
+  input[type="file"],
+  button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+
+  button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+</style>
+
+{% endblock %}

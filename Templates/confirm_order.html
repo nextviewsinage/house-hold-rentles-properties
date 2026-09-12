@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        h1, h2, h3 {
+            color: #343a40;
+            text-align: center;
+        }
+
+        p {
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #343a40;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        a {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+        /* Add this to your existing style section or include it in your stylesheet */
+.cart-container {
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+.cart-item {
+    display: flex;
+    border: 1px solid #ced4da;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cart-item-img {
+    max-width: 100px;
+    max-height: 100px;
+    object-fit: cover;
+    border-radius: 10px 0 0 10px;
+}
+
+.item-details {
+    padding: 20px;
+    flex: 1;
+}
+
+.item-details h3 {
+    margin: 0;
+    color: #343a40;
+    font-size: 18px;
+    text-align: left; /* Add this line to align the text to the left */
+}
+
+
+.item-details p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 16px;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Order Confirmation</h1>
+        
+
+        <div class="page-content container">
+            <div class="page-header text-blue-d2">
+                <h2>Invoice</h2>
+        
+                {% for val in confirmdata %}
+                <p> Address: {{ val.Address }} </p>
+                {% endfor %}
+                <!-- Add any additional details for the invoice header here -->
+            </div>
+
+<h2>Order Details</h2>
+
+<div class="cart-container">
+    <ul>
+        {% for key, value in request.session.cart.items %}
+            <li class="cart-item">
+                <img src="{{value.image}}" class="cart-item-img" alt="{{ value.name }}">
+                <div class="item-details">
+                    <h3>{{ value.name }}</h3>
+                    <p>Price: Rs {{ value.price }}</p>
+
+                    {% comment %} <p>Total: Rs {{ value.display_price|floatformat:"2" }}</p> {% endcomment %}
+                </div>
+            </li>
+            {% comment %} {% with item_total=value.display_price|default:0|floatformat:"2" %}
+                {% with total=total|add:item_total %}
+                {% endwith %}
+            {% endwith %}
+            {% if forloop.last %}
+                <!-- Add this line to ensure total is calculated correctly -->
+                {% with total=total|floatformat:"2" %}
+                <p class="cart-total">Total: Rs {{ total }}</p>
+                <p class="debug-info">Debug: {{ key }}, {{ value }}, {{ item_total }}, {{ total }}</p>
+                {% endwith %}
+            {% endif %} {% endcomment %}
+        {% endfor %}
+       
+    </ul>
+</div>
+{% for a in name %}
+<div class="category-button">
+    <a class="elementor-button elementor-button-link elementor-size-default" href="javascript:void(0);" onclick="changeCategory({{ a.id }})">
+        <span class="elementor-button-content-wrapper">
+            <span class="elementor-button-text">{{ a.name }}</span>
+        </span>
+    </a>
+
+{% endfor %}
+<!-- Display the name dynamically -->
+<div>
+    <form method="post" action="{% url 'confirm_order_view' %}">
+        {% csrf_token %}
+        <label for="id_address">Address:</label>
+        <input type="text" name="address" id="id_address" required> 
+    
+        <button type="submit" class="btn checkout-btn">Shopp</button>
+    </form>
+    
+  
+        <a href="{% url 'index2view' %}">Back to Home</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,107 @@
+{% extends 'rentalapp/master.html' %}
+{% load static %}
+{% block content %}
+
+
+<div class="container mt-5">
+    <div class="text-center">
+        <h1 class="mb-4">Category Page</h1>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="inputName" class="font-weight-bold">Name</label>
+            <input type="text" name="name" class="form-control" id="inputName" placeholder="Enter Name">
+            <small class="form-text text-muted">Please provide a descriptive name.</small>
+        </div>
+        <div class="form-group">
+            <label for="inputDetails" class="font-weight-bold">Details</label>
+            <textarea name="details" class="form-control" id="inputDetails" rows="3" placeholder="Enter Details"></textarea>
+        </div>
+        <!-- You can uncomment this section if needed -->
+        <!--
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+            <label class="form-check-label" for="exampleCheck1">Check me out</label>
+        </div>
+        -->
+        <div class="text-center mt-5">
+            <a href="{% url 'index3' %}" class="btn btn-secondary mr-2">Back to Home</a>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Styles for labels */
+.font-weight-bold {
+    font-weight: bold;
+    border-bottom: 2px solid #007bff; /* Add border to the bottom */
+    padding-bottom: 5px; /* Add some padding to separate text from border */
+}
+
+    /* Assuming you have a custom CSS file linked to your HTML */
+
+/* Style for the container */
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Style for the form */
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Style for labels */
+.font-weight-bold {
+    font-weight: bold;
+}
+
+/* Style for input fields */
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Style for textareas */
+textarea.form-control {
+    resize: vertical; /* Allow vertical resizing of textarea */
+}
+
+/* Style for small text */
+.form-text {
+    color: #6c757d; /* Adjust color as needed */
+}
+
+/* Style for submit button */
+.btn-primary {
+    background-color: #007bff; /* Blue color, adjust as needed */
+    color: #fff; /* Text color */
+    padding: 10px 20px; /* Adjust padding as needed */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Hover effect for submit button */
+.btn-primary:hover {
+    background-color: #0056b3; /* Darker blue color on hover */
+}
+
+/* Center align text */
+.text-center {
+    text-align: center;
+}
+
+/* Add margin to top */
+.mt-5 {
+    margin-top: 25px;
+}
+</style>
+
+{% endblock %}
+

@@ -1,0 +1,59 @@
+{% extends 'ownerapp/master.html' %}
+{% load static %}
+{% block content %}
+
+<main>
+<form method="POST" action="/ownerapp/updateproduct/{{data.id}}/">
+    {% csrf_token %}
+    <div class="row mb-3">
+        <label for="inputText">Item Name</label>
+        <div class="col-sm-10">
+            <input type="text" name="name" class="form-control" value="{{data.name}}">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="inputEmail">Item Price</label>
+        <div class="col-sm-10">
+            <input type="number" name="price" class="form-control"value="{{data.price}}">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="inputEmail">Item details</label>
+        <div class="col-sm-10">
+            <input type="text" name="details" class="form-control"value="{{data.details}}">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="form_category">Category Name </label>
+        <div class="col-sm-10">
+            <select class="form-control" name="category" required>
+                {% for cat in category %}
+                    <option value="{{ cat.id }}" {% if cat.id == data.category.id %}selected{% endif %}>
+                        {{ cat.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="form_photo">product image *</label>
+        <div class="col-sm-10">
+            <input id="form_photo" type="photo" name="image" placeholder="Please enter status*" value="{{data.image}}">
+        </div>
+    
+
+    <div class="row mb-3">
+        <label class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <button type="submit" class="btn btn-primary">Submit Form</button>
+        </div>
+    </div>
+</form><!-- End General Form Elements -->
+</div>
+</div>
+</div>
+</div>
+</section>
+
+</main><!-- End #main -->
+{% endblock %}

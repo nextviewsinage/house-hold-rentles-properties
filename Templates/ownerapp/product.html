@@ -1,0 +1,54 @@
+{% extends 'ownerapp/master.html' %}
+{% load static %}
+{% block content %}
+
+<main>
+
+  <div class = "container mt-5">
+    <div class = " text-center mt -5 ">
+
+        <h1> PRODUCT NAME </h1>
+
+  
+      </div>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <div class="form-group">
+    <label for="exampleFormControlInput1">product Name</label>
+    <input type="text" name="name" class="form-control" id="exampleFormControlInput1">
+  </div>
+
+  <div class="form-group">
+    <label for="exampleFormControlInput1">product price</label>
+    <input type="text" name="price" class="form-control" id="exampleFormControlInput1">
+  </div>
+
+  <div class="form-group">
+    <label for="exampleFormControlInput1">product details</label>
+    <input type="text" name="details" class="form-control" id="exampleFormControlInput1">
+  </div>
+
+  <div class="form-group">
+    <label for="exampleFormControlInput1">product Category</label>
+    {% comment %} <input type="text" name="details" class="form-control" id="exampleFormControlInput1"> {% endcomment %}
+    <select class="form-control" aria-label="Default select example" name="category">
+      {% for ab in category %}
+      <option value="{{ab.id}}">{{ab.name}}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="exampleFormControlInput1">product image</label>
+    <input type="file" name="image" class="form-control" id="exampleFormControlInput1">
+  </div>
+
+  </div>
+  <div class="text-center mt-5">
+    <a href="{% url 'index' %}" class="btn btn-primary">Back to Home</a>
+    <button class="btn btn-primary" type="submit" value="Submit">ADD</button>
+  </div>
+</form>
+</main>
+{% endblock %}

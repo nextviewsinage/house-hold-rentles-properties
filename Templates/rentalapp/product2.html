@@ -1,0 +1,112 @@
+
+
+<style>
+  /* Define styles for form container */
+.container {
+  width: 50%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Style form headings */
+h1 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Style form fields */
+.form-control {
+  width: 100%;        
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #007bff;
+}
+
+/* Style buttons */
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+/* Center align text */
+.text-center {
+  text-align: center;
+}
+
+/* Add margin to the top */
+.mt-5 {
+  margin-top: 20px;
+}
+
+  
+</style>
+{% extends 'rentalapp/master.html' %}
+{% load static %}
+{% block content %}
+
+<main>
+
+  <div class="container mt-5">
+    <div class="text-center">
+      <h1>Product rent from</h1>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+          <label for="productName">Name:</label>
+          <input type="text" name="name" class="form-control" id="productName" placeholder="Enter product name">
+      </div>
+  
+      <div class="form-group">
+          <label for="productPrice">Price:</label>
+          <input type="text" name="price" class="form-control" id="productPrice" placeholder="Enter product price">
+      </div>
+  
+      <div class="form-group">
+          <label for="productDetails">Details:</label>
+          <textarea name="details" class="form-control" id="productDetails" placeholder="Enter product details"></textarea>
+      </div>
+  
+      <div class="form-group">
+          <label for="productPhoto">Photo:</label>
+          <input type="file" name="photo" class="form-control-file" id="productPhoto">
+      </div>
+  
+      <div class="form-group">
+          <label for="productQuantity">Quantity:</label>
+          <input type="number" name="quantity" class="form-control" id="productQuantity" placeholder="Enter product quantity">
+      </div>
+  
+      <div class="text-center mt-4">
+          <a href="{% url 'index3' %}" class="btn btn-secondary mr-2">Back to Home</a>
+          <button type="submit" class="btn btn-primary">Add Product</button>
+      </div>
+  </form>
+    </div>
+
+</main>
+{% endblock %}
+
+

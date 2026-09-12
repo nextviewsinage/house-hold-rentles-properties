@@ -1,0 +1,34 @@
+{% extends 'ownerapp/master.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="text-center">
+        <h1 class="mb-4">Category Page</h1>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="inputName" class="font-weight-bold">Name</label>
+            <input type="text" name="name" class="form-control" id="inputName" placeholder="Enter Name">
+            <small class="form-text text-muted">Please provide a descriptive name.</small>
+        </div>
+        <div class="form-group">
+            <label for="inputDetails" class="font-weight-bold">Details</label>
+            <textarea name="details" class="form-control" id="inputDetails" rows="3" placeholder="Enter Details"></textarea>
+        </div>
+        <!-- You can uncomment this section if needed -->
+        <!--
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+            <label class="form-check-label" for="exampleCheck1">Check me out</label>
+        </div>
+        -->
+        <div class="text-center mt-5">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'master.html' %}
+{% load static %}
+{% block content %}
+
+<main>
+    <div class="container">
+        <h1 class="mt-5 mb-4">Feedback Data</h1>
+
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Phone</th>
+                        <th scope="col">Feedback</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ab in data %}
+                    <tr>
+                        <td>{{ ab.id }}</td>
+                        <td>{{ ab.name }}</td>
+                        <td>{{ ab.email }}</td>
+                        <td>{{ ab.phone }}</td>
+                        <td>{{ ab.feedback }}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm"><a href="{% url 'deletefeedback' ab.id %}" class="text-white">Delete</a></button>
+                            <button type="button" class="btn btn-primary btn-sm"><a href="{% url 'editfeedback' ab.id %}" class="text-white">Edit</a></button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends 'master.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    /* Style for container */
+    .container {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Style for invoice header */
+    h2 {
+        color: #333;
+    }
+    
+    /* Style for bill to section */
+    h4 {
+        color: #555;
+    }
+    
+    /* Style for invoice details */
+    p {
+        margin: 0;
+    }
+    
+    /* Style for table */
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    /* Style for table header */
+    th {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px;
+        text-align: left;
+    }
+    
+    /* Style for table rows */
+    td {
+        padding: 10px;
+    }
+    
+    /* Style for total section */
+    h4 strong {
+        color: #555;
+    }
+    
+    /* Style for send bill button */
+    .btn-container {
+        margin-top: 20px;
+    }
+    
+    .btn-primary {
+        background-color: #28a745;
+        color: #fff;    
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+    
+    .btn-primary:hover {
+        background-color: #218838;
+    }
+</style>    
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>Invoice</h2>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <h4>Bill To:</h4>
+            <!-- Add customer details if available -->
+        </div>
+        <div class="col-md-6 text-right">
+            <p><strong>Invoice Number:</strong> {{ final_order.id }}</p>
+            <!-- Add more invoice details here -->
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Scrap name</th>
+                        <th>Price</th>
+                        <th>Subtotal</th>
+                        <th>Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in final_order.confirmorder_set.all %}
+                    <tr>
+                        <td>{{ item.product.id }}</td>
+                        <td>{{ item.product.name }}</td>
+                        <td>₹{{ item.product.price }}</td>
+                        <td>₹{{ item.subtotal }}</td>
+                        <td>{{ item.address }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-6 offset-md-6 text-right">
+            <!-- Calculate and display subtotal and total for each order -->
+            <h4><strong>Total:</strong> ₹{{ final_order.total }}</h4>
+            <!-- Add more details like delivery charge, taxes, etc. -->
+            <div class="btn-container">
+                <a href="" class="btn btn-primary py-1 px-2" type="submit" style="background-color: green; color:bisque;">Send Bill</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

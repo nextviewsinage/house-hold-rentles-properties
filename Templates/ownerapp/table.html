@@ -1,0 +1,39 @@
+{% extends 'ownerapp/master.html' %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="text-center mt-5">
+    <h1>Product Data</h1>
+    </div>
+    <div class="table-container">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid #ddd; background-color: #f2f2f2; padding: 8px;">ID</th>
+                    <th style="border: 1px solid #ddd; background-color: #f2f2f2; padding: 8px;">Name</th>
+                    <th style="border: 1px solid #ddd; background-color: #f2f2f2; padding: 8px;">Price</th>
+                    <th style="border: 1px solid #ddd; background-color: #f2f2f2; padding: 8px;">Details</th>
+                    <th style="border: 1px solid #ddd; background-color: #f2f2f2; padding: 8px;">photo</th>
+                    <th style="border: 1px solid #ddd; background-color: #f2f2f2; padding: 8px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ab in data %}
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{ ab.id }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{ ab.name }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{ ab.price }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{ ab.details }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;"><img src={{ ab.image.url }} height='50' width='50'></td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">
+                        <button style="padding: 5px 10px; border: none; background-color: #007bff; color: #fff; cursor: pointer; text-decoration: none;" class="action-button"><a href="{% url 'deleteproduct' ab.id %}" style="color: #fff;">Delete</a></button>
+                        <button style="padding: 5px 10px; border: none; background-color: #007bff; color: #fff; cursor: pointer; text-decoration: none;" class="action-button"><a href="{% url 'editproduct' ab.id %}" style="color: #fff;">Edit</a></button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+
+{% endblock %}
