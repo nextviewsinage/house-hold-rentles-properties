@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 
 class product(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='rental_products')
     name = models.CharField(max_length=255)
     price = models.IntegerField()
     details = models.TextField(null=True)
