@@ -2,53 +2,160 @@
 {% load static %}
 {% block content %}
 
-<main>
+<style>
+  .form-page-wrapper {
+    min-height: 100vh;
+    background: #f4f6f9;
+    padding: 100px 0 60px 0;
+  }
+  .form-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    padding: 40px 40px 30px 40px;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+  .form-card .page-heading {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .form-card .page-heading h2 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #2d3748;
+    letter-spacing: 1px;
+  }
+  .form-card .page-heading p {
+    color: #718096;
+    font-size: 14px;
+    margin: 0;
+  }
+  .form-card .form-label {
+    font-weight: 600;
+    color: #444;
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  .form-card .form-control {
+    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    padding: 10px 14px;
+    font-size: 14px;
+    transition: border 0.2s;
+  }
+  .form-card .form-control:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 3px rgba(78,115,223,0.12);
+    outline: none;
+  }
+  .form-card select.form-control {
+    background: #fff;
+  }
+  .form-card .input-icon-wrap {
+    position: relative;
+  }
+  .form-card .input-icon-wrap i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a0aec0;
+    font-size: 16px;
+  }
+  .form-card .input-icon-wrap input,
+  .form-card .input-icon-wrap select {
+    padding-left: 36px;
+  }
+  .form-card .btn-submit {
+    background: linear-gradient(135deg, #4e73df, #224abe);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 35px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .form-card .btn-submit:hover { opacity: 0.9; }
+  .form-card .btn-back {
+    background: #f0f0f0;
+    color: #444;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 25px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .form-card .btn-back:hover { background: #e2e8f0; color: #222; }
+  .form-group { margin-bottom: 18px; }
+  .divider { border: none; border-top: 1.5px solid #f0f0f0; margin: 22px 0; }
+</style>
 
-  <div class = "container mt-5">
-    <div class = " text-center mt -5 ">
+<div class="form-page-wrapper">
+  <div class="form-card">
 
-        <h1> PRODUCT NAME </h1>
+    <div class="page-heading">
+      <h2>📦 Add New Product</h2>
+      <p>Fill in the details below to add a new product</p>
+    </div>
 
-  
+    <hr class="divider">
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label">📝 Product Name</label>
+        <div class="input-icon-wrap">
+          <i class="bi bi-box-seam"></i>
+          <input type="text" name="name" class="form-control" placeholder="Enter product name" required>
+        </div>
       </div>
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %}
 
-  <div class="form-group">
-    <label for="exampleFormControlInput1">product Name</label>
-    <input type="text" name="name" class="form-control" id="exampleFormControlInput1">
-  </div>
+      <div class="form-group">
+        <label class="form-label">💰 Product Price (₹)</label>
+        <div class="input-icon-wrap">
+          <i class="bi bi-currency-rupee"></i>
+          <input type="number" name="price" class="form-control" placeholder="Enter price" required>
+        </div>
+      </div>
 
-  <div class="form-group">
-    <label for="exampleFormControlInput1">product price</label>
-    <input type="text" name="price" class="form-control" id="exampleFormControlInput1">
-  </div>
+      <div class="form-group">
+        <label class="form-label">📄 Product Details</label>
+        <textarea name="details" class="form-control" rows="3" placeholder="Enter product description"></textarea>
+      </div>
 
-  <div class="form-group">
-    <label for="exampleFormControlInput1">product details</label>
-    <input type="text" name="details" class="form-control" id="exampleFormControlInput1">
-  </div>
+      <div class="form-group">
+        <label class="form-label">🗂️ Product Category</label>
+        <div class="input-icon-wrap">
+          <i class="bi bi-grid"></i>
+          <select class="form-control" name="category" required>
+            <option value="" disabled selected>-- Select Category --</option>
+            {% for ab in category %}
+            <option value="{{ ab.id }}">{{ ab.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
 
-  <div class="form-group">
-    <label for="exampleFormControlInput1">product Category</label>
-    {% comment %} <input type="text" name="details" class="form-control" id="exampleFormControlInput1"> {% endcomment %}
-    <select class="form-control" aria-label="Default select example" name="category">
-      {% for ab in category %}
-      <option value="{{ab.id}}">{{ab.name}}</option>
-      {% endfor %}
-    </select>
-  </div>
+      <div class="form-group">
+        <label class="form-label">🖼️ Product Image</label>
+        <input type="file" name="image" class="form-control" accept="image/*" required>
+      </div>
 
-  <div class="form-group">
-    <label for="exampleFormControlInput1">product image</label>
-    <input type="file" name="image" class="form-control" id="exampleFormControlInput1">
-  </div>
+      <hr class="divider">
 
+      <div class="text-center" style="display:flex; gap:12px; justify-content:center;">
+        <a href="{% url 'index' %}" class="btn-back">← Back to Home</a>
+        <button class="btn-submit" type="submit">✅ ADD Product</button>
+      </div>
+
+    </form>
   </div>
-  <div class="text-center mt-5">
-    <a href="{% url 'index' %}" class="btn btn-primary">Back to Home</a>
-    <button class="btn btn-primary" type="submit" value="Submit">ADD</button>
-  </div>
-</form>
-</main>
+</div>
+
 {% endblock %}

@@ -1,39 +1,192 @@
 {% extends 'ownerapp/master.html' %}
 {% load static %}
 {% block content %}
-<main>
-    <div class="text-center mt-5">
-    <h1>Product Data</h1>
+
+<style>
+  .table-page-wrapper {
+    background: #f4f6f9;
+    min-height: 100vh;
+    padding: 100px 20px 60px 20px;
+  }
+  .table-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+    padding: 30px 30px 20px 30px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .table-header h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #2d3748;
+    margin: 0;
+  }
+  .table-header a.btn-add {
+    background: linear-gradient(135deg, #4e73df, #224abe);
+    color: #fff;
+    padding: 9px 22px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .table-header a.btn-add:hover { opacity: 0.88; }
+
+  .stats-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .stat-pill {
+    background: #f8f9fc;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4e73df;
+    border: 1.5px solid #e3e6f0;
+  }
+  .stat-pill span { color: #2d3748; font-size: 20px; font-weight: 800; display: block; }
+
+  /* Table */
+  .prod-table { width: 100%; border-collapse: collapse; }
+  .prod-table thead tr {
+    background: #f8f9fc;
+  }
+  .prod-table th {
+    padding: 12px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #5a5c69;
+    border-bottom: 2px solid #e3e6f0;
+    text-align: left;
+  }
+  .prod-table td {
+    padding: 13px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    color: #444;
+    vertical-align: middle;
+  }
+  .prod-table tr:hover td { background: #f8f9fc; }
+  .prod-table .prod-img {
+    width: 55px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  }
+  .prod-table .prod-name { font-weight: 700; color: #2d3748; }
+  .prod-table .prod-price { font-weight: 700; color: #1cc88a; font-size: 15px; }
+  .cat-badge {
+    background: #d1ecf1;
+    color: #0c5460;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .btn-del {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    margin-right: 6px;
+    transition: background 0.2s;
+  }
+  .btn-del:hover { background: #f5c6cb; }
+  .btn-edit {
+    background: #fff3cd;
+    color: #856404;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    transition: background 0.2s;
+  }
+  .btn-edit:hover { background: #ffeeba; }
+  .empty-row { text-align: center; color: #999; font-size: 15px; padding: 30px; }
+</style>
+
+<div class="table-page-wrapper">
+  <div class="table-card">
+
+    <!-- Header -->
+    <div class="table-header">
+      <h2>📦 Product Management</h2>
+      <a href="{% url 'product' %}" class="btn-add">➕ Add New Product</a>
     </div>
-    <div class="table-container">
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-            <thead>
-                <tr>
-                    <th style="border: 1px solid #ddd; background-color: #f2f2f2; padding: 8px;">ID</th>
-                    <th style="border: 1px solid #ddd; background-color: #f2f2f2; padding: 8px;">Name</th>
-                    <th style="border: 1px solid #ddd; background-color: #f2f2f2; padding: 8px;">Price</th>
-                    <th style="border: 1px solid #ddd; background-color: #f2f2f2; padding: 8px;">Details</th>
-                    <th style="border: 1px solid #ddd; background-color: #f2f2f2; padding: 8px;">photo</th>
-                    <th style="border: 1px solid #ddd; background-color: #f2f2f2; padding: 8px;">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for ab in data %}
-                <tr>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{ ab.id }}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{ ab.name }}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{ ab.price }}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{ ab.details }}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;"><img src={{ ab.image.url }} height='50' width='50'></td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">
-                        <button style="padding: 5px 10px; border: none; background-color: #007bff; color: #fff; cursor: pointer; text-decoration: none;" class="action-button"><a href="{% url 'deleteproduct' ab.id %}" style="color: #fff;">Delete</a></button>
-                        <button style="padding: 5px 10px; border: none; background-color: #007bff; color: #fff; cursor: pointer; text-decoration: none;" class="action-button"><a href="{% url 'editproduct' ab.id %}" style="color: #fff;">Edit</a></button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-pill">
+        <span>{{ data|length }}</span>
+        Total Products
+      </div>
     </div>
-</main>
+
+    <!-- Table -->
+    <div style="overflow-x:auto;">
+      <table class="prod-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Image</th>
+            <th>Product Name</th>
+            <th>Category</th>
+            <th>Price (₹)</th>
+            <th>Details</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ab in data %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>
+              {% if ab.image %}
+              <img src="{{ ab.image.url }}" class="prod-img" alt="{{ ab.name }}">
+              {% else %}
+              <span style="color:#ccc; font-size:13px;">No Image</span>
+              {% endif %}
+            </td>
+            <td class="prod-name">{{ ab.name }}</td>
+            <td><span class="cat-badge">{{ ab.category.name }}</span></td>
+            <td class="prod-price">₹{{ ab.price }}</td>
+            <td style="max-width:200px; color:#666;">{{ ab.details|truncatechars:50 }}</td>
+            <td>
+              <a href="{% url 'deleteproduct' ab.id %}" class="btn-del" onclick="return confirm('Are you sure you want to delete {{ ab.name }}?')">🗑️ Delete</a>
+              <a href="{% url 'editproduct' ab.id %}" class="btn-edit">✏️ Edit</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="empty-row">No products found. <a href="{% url 'product' %}">Add your first product</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
 
 {% endblock %}
